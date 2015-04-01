@@ -12,7 +12,7 @@ install:
   - pip install .
 
 # Command to run tests, e.g. python setup.py test
-script:
+#script:
 #  - coverage run --source=filechooser manage.py test
 
 # Report to coveralls
