@@ -1,0 +1,20 @@
+language: python
+
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+
+# Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install:
+  - pip install coveralls
+  - pip install humanize
+  - pip install .
+
+# Command to run tests, e.g. python setup.py test
+script:
+#  - coverage run --source=filechooser manage.py test
+
+# Report to coveralls
+after_success:
+  - coveralls

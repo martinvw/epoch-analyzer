@@ -5,7 +5,7 @@ from setuptools import setup
 
 def get_metadata():
     import re
-    with open(os.path.join("epoch-analyzer", "__init__.py")) as f:
+    with open(os.path.join("epoch_analyzer", "__init__.py")) as f:
         return dict(re.findall("__([a-z]+)__ = ['\"]([^'\"]+)['\"]", f.read()))
 
 metadata = get_metadata()
