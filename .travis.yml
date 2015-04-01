@@ -12,8 +12,8 @@ install:
   - pip install .
 
 # Command to run tests, e.g. python setup.py test
-#script:
-#  - coverage run --source=filechooser manage.py test
+script:
+  - coverage run test_epoch_analyzer.py
 
 # Report to coveralls
 after_success:
