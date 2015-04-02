@@ -27,6 +27,7 @@ setup(
     description='Utility detect probable date/time formats given a numeric input.',
     long_description=long_description,
     # entry_points={'console_scripts': ['epoch_detector = epochdetector.epochdetector:main']},
+    include_package_data=True,
     install_requires=[],
     keywords=['datetime', 'timestamp', 'epoch'],
     classifiers=[

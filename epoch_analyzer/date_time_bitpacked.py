@@ -1,6 +1,6 @@
 import datetime
 
-from date_time.date_time import OrderedDateTimeScorer
+from .date_time import OrderedDateTimeScorer
 
 
 class DateTimeBitPackedScorer(OrderedDateTimeScorer):

@@ -4,21 +4,21 @@ __version__ = '0.1'
 
 from .date_time_composition import *
 from .date_time_bitpacked import *
-from date_time.epoch import *
-from date_time.unit import *
+from .epoch import *
+from .unit import *
 from collections import Counter
 import logging
 
 __all__ = ["EpochTester", "DateTimeCompositionScorer", "FATTimestampScorer", "SiemensDVRTimestampScorer"]
 
 class EpochTester(object):
-    DEFAULT_MIN_DAYS = 5 * 365
+    DEFAULT_MIN_DAYS = 8 * 365
     DEFAULT_MAX_DAYS = 0.5 * 365
 
     def __init__(self, min_date = None, max_date = None, verbose = False):
         today = datetime.datetime.today()
-        if min_date == None: min_date = today - datetime.timedelta(days = DEFAULT_MIN_DAYS)
-        if max_date == None: max_date = today + datetime.timedelta(days = DEFAULT_MAX_DAYS)
+        if min_date == None: min_date = today - datetime.timedelta(days = self.DEFAULT_MIN_DAYS)
+        if max_date == None: max_date = today + datetime.timedelta(days = self.DEFAULT_MAX_DAYS)
 
         self.min_date = min_date
         self.max_date = max_date
@@ -26,7 +26,7 @@ class EpochTester(object):
 
         self.__init_testers()
 
-    def test(self, values):
+    def test(self, values, return_percentage = False):
         if not isinstance(values, Counter): values = Counter(values)
 
         result = Counter()
@@ -43,6 +43,7 @@ class EpochTester(object):
 
         for value, count in result.items():
             result[value] = count / total_count
+            if return_percentage: result[value] *= 100
 
         return result
 

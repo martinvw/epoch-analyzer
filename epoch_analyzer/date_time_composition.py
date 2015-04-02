@@ -1,9 +1,9 @@
 import datetime
 
-from date_time.date_time import OrderedDateTimeScorer
+from .date_time import OrderedDateTimeScorer
 
 class DateTimeCompositionScorer(OrderedDateTimeScorer):
-    def __init__(self, minDate, maxDate, epoch, unit):        
+    def __init__(self, minDate, maxDate, epoch, unit):
         self.epoch = epoch
         self.unit  = unit
         super(DateTimeCompositionScorer, self).__init__(minDate, maxDate)
