@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 __version__ = '0.1'
 
+import re
 
 from .date_time_composition import *
 from .date_time_bitpacked import *
 from .epoch import *
 from .unit import *
-from collections import Counter
+from collections import Counter, OrderedDict, Iterable
 import logging
 
 __all__ = ["EpochTester", "DateTimeCompositionScorer", "FATTimestampScorer", "SiemensDVRTimestampScorer"]
@@ -48,18 +49,27 @@ class EpochTester(object):
         return result
 
     def convert(self, values):
-        if not isinstance(values, Counter): values = Counter(values)
+        if not isinstance(values, Iterable): values = {values}
 
-        for value, count in values.items():
+        result = OrderedDict()
+
+        for value in values:
+            result[value] = None
             # iterate all the different test classes
             for name, scorer in self.testClasses.items():
                 score = scorer.score(value)
                 if score > 0:
-                    print("{} could be of type {} with actual date {}".format(value, name, scorer.convertToDate(value)))
+                    result[value] = (name, scorer.convertToDate(value))
+                    logging.info("{} could be of type {} with actual date {}".format(value, name, scorer.convertToDate(value)))
+
+        return result
 
     def __init_testers(self):
         units = {TicksUnit(), MicroSecondsUnit(), MiliSecondsUnit(), SecondsUnit(), MinutesUnit(), DaysUnit()}
         epochs = {MacOSXEpoch(), UnixEpoch(), ExcelEpoch(), MacOSEpoch(), NTPEpoch(), MicrosoftEpoch(), DotNetEpoch()}
+
+        first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+        all_cap_re = re.compile('([a-z0-9])([A-Z])')
 
         self.testClasses = {}
 
@@ -67,8 +77,9 @@ class EpochTester(object):
             unit_name = type(unit).__name__.replace('Unit', '')
             for epoch in epochs:
                 epoch_name = type(epoch).__name__
-                full_name = unit_name + 'Since' + epoch_name
+                full_name = 'NumberOf' + unit_name + 'Since' + epoch_name
+                full_name = all_cap_re.sub(r'\1 \2', first_cap_re.sub(r'\1 \2',full_name))
                 self.testClasses[full_name] = DateTimeCompositionScorer(self.min_date, self.max_date, epoch, unit)
 
-        self.testClasses['FATTimestamp'] = FATTimestampScorer(self.min_date, self.max_date)
-        self.testClasses['SiemensDVRTimestamp']  = SiemensDVRTimestampScorer(self.min_date, self.max_date)
+        self.testClasses['FAT timestamp'] = FATTimestampScorer(self.min_date, self.max_date)
+        self.testClasses['Siemens DVR timestamp']  = SiemensDVRTimestampScorer(self.min_date, self.max_date)
