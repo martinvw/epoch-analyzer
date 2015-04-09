@@ -48,7 +48,7 @@ class EpochTester(object):
 
         return result
 
-    def convert(self, values):
+    def convert(self, values, force_scorer = None):
         if not isinstance(values, Iterable): values = {values}
 
         result = OrderedDict()
@@ -57,9 +57,12 @@ class EpochTester(object):
             result[value] = None
             # iterate all the different test classes
             for name, scorer in self.testClasses.items():
+                if force_scorer and force_scorer != name: continue
+
                 score = scorer.score(value)
-                if score > 0:
-                    result[value] = (name, scorer.convertToDate(value))
+                if score > 0 or force_scorer == name:
+                    if not result[value]: result[value] = ()
+                    result[value] += ((name, scorer.convertToDate(value)),)
                     logging.info("{} could be of type {} with actual date {}".format(value, name, scorer.convertToDate(value)))
 
         return result
