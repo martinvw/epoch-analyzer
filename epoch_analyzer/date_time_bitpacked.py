@@ -1,4 +1,9 @@
 import datetime
+import math
+import operator
+import re
+
+from collections import OrderedDict
 
 from .date_time import OrderedDateTimeScorer
 
@@ -10,12 +15,12 @@ class DateTimeBitPackedScorer(OrderedDateTimeScorer):
 
     def convertToDate(self, number):
         try:
-            day     = self.dayTransformation     ((number >> self.bitshift('day')) & self.mask('day'))
-            month   = self.monthTransformation   ((number >> self.bitshift('month')) & self.mask('month'))
-            year    = self.yearTransformation    ((number >> self.bitshift('year')) & self.mask('year'))
-            second = self.secondTransformation  ((number >> self.bitshift('second')) & self.mask('second'))
-            minute = self.minuteTransformation  ((number >> self.bitshift('minute')) & self.mask('minute'))
-            hour   = self.hourTransformation    ((number >> self.bitshift('hour')) & self.mask('hour'))
+            day     = self.dayTransformation     ((number >> self.bitshift('D')) & self.mask('D'))
+            month   = self.monthTransformation   ((number >> self.bitshift('M')) & self.mask('M'))
+            year    = self.yearTransformation    ((number >> self.bitshift('Y')) & self.mask('Y'))
+            second = self.secondTransformation  ((number >> self.bitshift('s')) & self.mask('s'))
+            minute = self.minuteTransformation  ((number >> self.bitshift('m')) & self.mask('m'))
+            hour   = self.hourTransformation    ((number >> self.bitshift('h')) & self.mask('h'))
 
             return datetime.datetime(year, month, day, hour, minute, second)
         except:
@@ -28,88 +33,118 @@ class DateTimeBitPackedScorer(OrderedDateTimeScorer):
         return (1 << self.mapping[type][1]) - 1
 
     def convertToNumber(self, date):
-        result =  self.reverseSecondTransformation(date.second) << self.mapping['second'][0]
-        result += self.reverseMinuteTransformation(date.minute) << self.mapping['minute'][0]
-        result += self.reverseHourTransformation(date.hour)     << self.mapping['hour'][0]
-        result += self.reverseDayTransformation(date.day)       << self.mapping['day'][0]
-        result += self.reverseMonthTransformation(date.month)   << self.mapping['month'][0]
-        result += self.reverseYearTransformation(date.year)     << self.mapping['year'][0]
+        result =  self.secondTransformation(date.second, reverse=True) << self.mapping['s'][0]
+        result += self.minuteTransformation(date.minute, reverse=True) << self.mapping['m'][0]
+        result += self.hourTransformation(date.hour, reverse=True)     << self.mapping['h'][0]
+        result += self.dayTransformation(date.day, reverse=True)       << self.mapping['D'][0]
+        result += self.monthTransformation(date.month, reverse=True)   << self.mapping['M'][0]
+        result += self.yearTransformation(date.year, reverse=True)     << self.mapping['Y'][0]
         return result
 
-    def reverseYearTransformation(self, value):
+    def __str__(self):
+        return self.convertMappingToString(self.mapping)
+
+    @staticmethod
+    def convertMappingToString(mapping):
+        max_value = 0
+        values = {}
+        for k, v in mapping.items():
+            max_value = max(max_value, v[0] + v[1])
+            values[v[0]+v[1]] = (k * v[1])
+
+        values =  OrderedDict(sorted(values.items(), reverse=True))        
+
+        result = ''
+
+        i = math.ceil(max_value / 8) * 8
+        while i > 0:
+            if i in values:
+                result += values[i]
+                i -= len(values[i])
+            else:
+                i -= 1
+                result += '?'
+
+        return re.sub('([DMYsmh]{8})', r'\g<1> ', result).strip()
+
+    @staticmethod
+    def convertStringToMapping(string):
+        # trim any whitespace in between
+        string = string.replace(' ', '')
+
+        mapping = {}
+        previous = None
+        count = 0
+        position = len(string)
+        for c in string[::-1]:
+            if previous == None: previous = c
+            
+            if previous != c: 
+                mapping[previous] = (len(string)-position, count, )
+                position = position - count
+                count = 1
+            else:
+                count += 1
+
+            previous = c
+
+        # add the remaining data
+        mapping[previous] = (len(string)-position, count, )
+
+        return mapping        
+
+    def yearTransformation(self, value, reverse=False):
         return value
 
-    def yearTransformation(self, value):
+    def monthTransformation(self, value, reverse=False):
         return value
 
-    def reverseMonthTransformation(self, value):
+    def dayTransformation(self, value, reverse=False):
         return value
 
-    def monthTransformation(self, value):
+    def hourTransformation(self, value, reverse=False):
         return value
 
-    def reverseDayTransformation(self, value):
+    def minuteTransformation(self, value, reverse=False):
         return value
 
-    def dayTransformation(self, value):
+    def secondTransformation(self, value, reverse=False):
         return value
 
-    def reverseHourTransformation(self, value):
-        return value
+    def plus(self, a, b, reverse=False):
+       return operator.add(a, b) if not reverse else operator.sub(a, b)
 
-    def hourTransformation(self, value):
-        return value
-
-    def reverseMinuteTransformation(self, value):
-        return value
-
-    def minuteTransformation(self, value):
-        return value
-
-    def reverseSecondTransformation(self, value):
-        return value
-
-    def secondTransformation(self, value):
-        return value
-
+    def mul(self, a, b, reverse=False):
+       return operator.mul(a, b) if not reverse else operator.truediv(a,b)
 
 class FATTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, minDate, maxDate):
         mapping = {}
-        mapping['second']  = [0, 5]
-        mapping['minute']  = [5, 6]
-        mapping['hour']    = [11,5]
-        mapping['day']     = [16,5]
-        mapping['month']   = [21,4]
-        mapping['year']    = [25,7]
+        mapping['s'] = [0, 5]
+        mapping['m'] = [5, 6]
+        mapping['h'] = [11,5]
+        mapping['D'] = [16,5]
+        mapping['M'] = [21,4]
+        mapping['Y'] = [25,7]
         super(FATTimestampScorer, self).__init__(minDate, maxDate, mapping)
 
-    def reverseYearTransformation(self, value):
-        return value - 1980
+    def yearTransformation(self, value, reverse=False):
+        return self.plus(value, 1980, reverse)
 
-    def yearTransformation(self, value):
-        return value + 1980
-
-    def reverseSecondTransformation(self, value):
-        return int(value / 2)
-
-    def secondTransformation(self, value):
-        return value * 2
+    def secondTransformation(self, value, reverse=False):
+        return int(self.mul(value, 2, reverse))
 
 
 class SiemensDVRTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, minDate, maxDate):
         mapping = {}
-        mapping['second']  = [0, 6]
-        mapping['minute']  = [6, 6]
-        mapping['hour']    = [12,5]
-        mapping['day']     = [17,5]
-        mapping['month']   = [22,4]
-        mapping['year']    = [26,6]
+        mapping['s'] = [0, 6]
+        mapping['m'] = [6, 6]
+        mapping['h'] = [12,5]
+        mapping['D'] = [17,5]
+        mapping['M'] = [22,4]
+        mapping['Y'] = [26,6]
         super(SiemensDVRTimestampScorer, self).__init__(minDate, maxDate, mapping)
 
-    def reverseYearTransformation(self, value):
-        return value - 1970
-
-    def yearTransformation(self, value):
-        return value + 1970
+    def yearTransformation(self, value, reverse=False):
+        return self.plus(value, 1970, reverse)
