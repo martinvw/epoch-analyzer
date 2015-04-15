@@ -1,8 +1,8 @@
 import datetime
 
-from .date_time import OrderedDateTimeScorer
+from .date_time import DateTimeScorer
 
-class DateTimeCompositionScorer(OrderedDateTimeScorer):
+class DateTimeCompositionScorer(DateTimeScorer):
     def __init__(self, minDate, maxDate, epoch, unit):
         self.epoch = epoch
         self.unit  = unit
