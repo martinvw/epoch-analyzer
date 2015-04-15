@@ -9,8 +9,13 @@ from .date_time import OrderedDateTimeScorer
 
 
 class DateTimeBitPackedScorer(OrderedDateTimeScorer):
-    def __init__(self, minDate, maxDate, mapping):
-        self.mapping = mapping
+    def __init__(self, minDate, maxDate, mapping = None, date_format_string = None):
+        if date_format_string:
+            self.mapping = DateTimeBitPackedScorer.convertStringToMapping(date_format_string)
+        elif mapping:
+            self.mapping = mapping
+        else:
+            raise Exception("Illegal argument, either date_format_string or prepaired mapping")
         super(DateTimeBitPackedScorer, self).__init__(minDate, maxDate)
 
     def convertToDate(self, number):
@@ -48,24 +53,25 @@ class DateTimeBitPackedScorer(OrderedDateTimeScorer):
     def convertMappingToString(mapping):
         max_value = 0
         values = {}
+        result = ''
+
+        # determine maximum and collection positions and string (lengths)
         for k, v in mapping.items():
             max_value = max(max_value, v[0] + v[1])
             values[v[0]+v[1]] = (k * v[1])
 
-        values =  OrderedDict(sorted(values.items(), reverse=True))        
+        # sort dict by keys
+        values = OrderedDict(sorted(values.items(), reverse=True))
 
-        result = ''
-
+        # reconstruct the string
         i = math.ceil(max_value / 8) * 8
         while i > 0:
-            if i in values:
-                result += values[i]
-                i -= len(values[i])
-            else:
-                i -= 1
-                result += '?'
+            addition = values[i] if i in values else '?'
+            result += addition
+            i -= len(addition)
 
-        return re.sub('([DMYsmh]{8})', r'\g<1> ', result).strip()
+        # add whitespace in between bytes
+        return re.sub('([DMYsmh\?]{8})', r'\g<1> ', result).strip()
 
     @staticmethod
     def convertStringToMapping(string):
@@ -78,20 +84,20 @@ class DateTimeBitPackedScorer(OrderedDateTimeScorer):
         position = len(string)
         for c in string[::-1]:
             if previous == None: previous = c
-            
-            if previous != c: 
+
+            # is this a different char than we were processing
+            if previous != c:
                 mapping[previous] = (len(string)-position, count, )
                 position = position - count
                 count = 1
+                previous = c
             else:
                 count += 1
-
-            previous = c
 
         # add the remaining data
         mapping[previous] = (len(string)-position, count, )
 
-        return mapping        
+        return mapping
 
     def yearTransformation(self, value, reverse=False):
         return value
@@ -119,14 +125,8 @@ class DateTimeBitPackedScorer(OrderedDateTimeScorer):
 
 class FATTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, minDate, maxDate):
-        mapping = {}
-        mapping['s'] = [0, 5]
-        mapping['m'] = [5, 6]
-        mapping['h'] = [11,5]
-        mapping['D'] = [16,5]
-        mapping['M'] = [21,4]
-        mapping['Y'] = [25,7]
-        super(FATTimestampScorer, self).__init__(minDate, maxDate, mapping)
+        format_string = "YYYYYYYM MMMDDDDD hhhhhmmm mmmsssss"
+        super(FATTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
 
     def yearTransformation(self, value, reverse=False):
         return self.plus(value, 1980, reverse)
@@ -137,14 +137,8 @@ class FATTimestampScorer(DateTimeBitPackedScorer):
 
 class SiemensDVRTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, minDate, maxDate):
-        mapping = {}
-        mapping['s'] = [0, 6]
-        mapping['m'] = [6, 6]
-        mapping['h'] = [12,5]
-        mapping['D'] = [17,5]
-        mapping['M'] = [22,4]
-        mapping['Y'] = [26,6]
-        super(SiemensDVRTimestampScorer, self).__init__(minDate, maxDate, mapping)
+        format_string = 'YYYYYYMM MMDDDDDh hhhhmmmm mmssssss'
+        super(SiemensDVRTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
 
     def yearTransformation(self, value, reverse=False):
         return self.plus(value, 1970, reverse)
