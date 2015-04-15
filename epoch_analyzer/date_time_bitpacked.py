@@ -9,16 +9,22 @@ class DateTimeBitPackedScorer(OrderedDateTimeScorer):
         super(DateTimeBitPackedScorer, self).__init__(minDate, maxDate)
 
     def convertToDate(self, number):
+        # bit magic only works with integers
+        number = int(number)
         try:
-            day     = self.dayTransformation     ((number >> self.bitshift('day')) & self.mask('day'))
-            month   = self.monthTransformation   ((number >> self.bitshift('month')) & self.mask('month'))
-            year    = self.yearTransformation    ((number >> self.bitshift('year')) & self.mask('year'))
+            day    = self.dayTransformation     ((number >> self.bitshift('day')) & self.mask('day'))
+            month  = self.monthTransformation   ((number >> self.bitshift('month')) & self.mask('month'))
+            year   = self.yearTransformation    ((number >> self.bitshift('year')) & self.mask('year'))
             second = self.secondTransformation  ((number >> self.bitshift('second')) & self.mask('second'))
             minute = self.minuteTransformation  ((number >> self.bitshift('minute')) & self.mask('minute'))
             hour   = self.hourTransformation    ((number >> self.bitshift('hour')) & self.mask('hour'))
 
+            print(year, month, day, hour, minute, second)
+
             return datetime.datetime(year, month, day, hour, minute, second)
-        except:
+        except RuntimeError as err:
+            print('I did some naughty, I ate an exception')
+            print(err)
             return
 
     def bitshift(self, type):
@@ -113,3 +119,21 @@ class SiemensDVRTimestampScorer(DateTimeBitPackedScorer):
 
     def yearTransformation(self, value):
         return value + 1970
+
+
+class FiveByteBitTimestampScorer(DateTimeBitPackedScorer):
+    def __init__(self, minDate, maxDate):
+        mapping = {}
+        mapping['year']    = [0, 8]
+        mapping['second']  = [14,6]
+        mapping['minute']  = [20,6]
+        mapping['hour']    = [26,5]
+        mapping['day']     = [31,5]
+        mapping['month']   = [36,4]
+        super(FiveByteBitTimestampScorer, self).__init__(minDate, maxDate, mapping)
+
+    def reverseYearTransformation(self, value):
+        return value - 2000
+
+    def yearTransformation(self, value):
+        return value + 2000
