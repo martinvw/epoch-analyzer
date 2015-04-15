@@ -13,7 +13,7 @@ import logging
 __all__ = ["EpochTester", "DateTimeCompositionScorer", "FATTimestampScorer", "SiemensDVRTimestampScorer", "FiveByteBitTimestampScorer"]
 
 class EpochTester(object):
-    DEFAULT_MIN_DAYS = 8 * 365
+    DEFAULT_MIN_DAYS = 9 * 365
     DEFAULT_MAX_DAYS = 0.5 * 365
 
     def __init__(self, min_date = None, max_date = None, verbose = False):
