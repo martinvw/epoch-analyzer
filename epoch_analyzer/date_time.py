@@ -13,10 +13,8 @@ class DateTimeScorer(metaclass = ABCMeta):
 
     def score(self, number):
         if self.ordered:
-            print(str(self), "comparing numbers")
             matches = self.minValue < number and self.maxValue > number
         else:
-            print(str(self), "comparing dates")
             date = self.convertToDate(number)
             matches = date and self.minDate < date and self.maxDate > date
 

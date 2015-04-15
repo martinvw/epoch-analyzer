@@ -11,7 +11,6 @@ tester = EpochTester()
 result = tester.convert((962961041, 2597010722, 767981813768,))
 print(result)
 
-
 tester = EpochTester()
 result = tester.test((962961041, 2597010722, 767981813768,))
 print(result)
