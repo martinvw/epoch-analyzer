@@ -2,6 +2,7 @@ import datetime
 import math
 import operator
 import re
+import logging
 
 from collections import OrderedDict
 
@@ -32,9 +33,8 @@ class DateTimeBitPackedScorer(DateTimeScorer):
         except ValueError:
             # eg. ValueError: month must be in 1..12
             return
-        except RuntimeError as err:
-            print('I did some naughty, I ate an exception')
-            print(err)
+        except Exception as err:
+            logging.warning(err)
             return
 
     def bitshift(self, type):
@@ -53,7 +53,7 @@ class DateTimeBitPackedScorer(DateTimeScorer):
         return result
 
     def __str__(self):
-        return self.convertMappingToString(self.mapping)
+        return "BitMask " + self.convertMappingToString(self.mapping)
 
     @staticmethod
     def convertMappingToString(mapping):

@@ -6,13 +6,19 @@ class Unit(metaclass = ABCMeta):
     def unit(self):
         return
 
+
     def convertToSeconds(self, number):
         return number / self.unit()
+
+
+    def __str__(self):
+        return type(self).__name__.replace('Unit', '')
 
 
 class DaysUnit(Unit):
     def unit(self):
         return 1 / (60 * 60 * 24)
+
 
 class MinutesUnit(Unit):
     def unit(self):

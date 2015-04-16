@@ -16,14 +16,13 @@ class EpochTester(object):
     DEFAULT_MIN_DAYS = 9 * 365
     DEFAULT_MAX_DAYS = 0.5 * 365
 
-    def __init__(self, min_date = None, max_date = None, verbose = False):
+    def __init__(self, min_date = None, max_date = None):
         today = datetime.datetime.today()
         if min_date == None: min_date = today - datetime.timedelta(days = self.DEFAULT_MIN_DAYS)
         if max_date == None: max_date = today + datetime.timedelta(days = self.DEFAULT_MAX_DAYS)
 
         self.min_date = min_date
         self.max_date = max_date
-        self.verbose = verbose
 
         self.__init_testers()
 
@@ -77,12 +76,10 @@ class EpochTester(object):
         self.testClasses = {}
 
         for unit in units:
-            unit_name = type(unit).__name__.replace('Unit', '')
             for epoch in epochs:
-                epoch_name = type(epoch).__name__
-                full_name = 'NumberOf' + unit_name + 'Since' + epoch_name
-                full_name = all_cap_re.sub(r'\1 \2', first_cap_re.sub(r'\1 \2',full_name))
-                self.testClasses[full_name] = DateTimeCompositionScorer(self.min_date, self.max_date, epoch, unit)
+                scorer = DateTimeCompositionScorer(self.min_date, self.max_date, epoch, unit)
+                full_name = all_cap_re.sub(r'\1 \2', first_cap_re.sub(r'\1 \2',str(scorer)))
+                self.testClasses[full_name] = scorer
 
         self.testClasses['FAT timestamp'] = FATTimestampScorer(self.min_date, self.max_date)
         self.testClasses['Siemens DVR timestamp']  = SiemensDVRTimestampScorer(self.min_date, self.max_date)

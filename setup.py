@@ -31,7 +31,6 @@ setup(
     install_requires=[],
     keywords=['datetime', 'timestamp', 'epoch'],
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
