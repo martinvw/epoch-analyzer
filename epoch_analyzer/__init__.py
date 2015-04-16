@@ -68,7 +68,7 @@ class EpochTester(object):
 
     def __init_testers(self):
         units = {TicksUnit(), MicroSecondsUnit(), MiliSecondsUnit(), SecondsUnit(), MinutesUnit(), DaysUnit()}
-        epochs = {MacOSXEpoch(), UnixEpoch(), ExcelEpoch(), MacOSEpoch(), NTPEpoch(), MicrosoftEpoch(), DotNetEpoch()}
+        epochs = {MacOSXEpoch(), UnixEpoch(), ExcelEpoch(), MacOSEpoch(), NTPEpoch(), MicrosoftEpoch(), DotNetEpoch(), AOLEpoch()}
 
         first_cap_re = re.compile('(.)([A-Z][a-z]+)')
         all_cap_re = re.compile('([a-z0-9])([A-Z])')
