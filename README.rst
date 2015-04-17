@@ -32,3 +32,6 @@ Given the resulting object you can call test or convert, for either testing numb
 
 Usage EpochTester.test
 ----------------------
+You can pass one number, an iterable list of numbers or for example a counter to this method.
+
+For each number one test conversion is performed 

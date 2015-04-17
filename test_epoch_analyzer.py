@@ -11,8 +11,13 @@ tester = EpochTester(min_date, max_date)
 result = tester.convert((1164287633,1164287633,1164287633, 2999663906, 767981813774,))
 print(result)
 
+<<<<<<< HEAD
 tester = EpochTester(min_date, max_date)
 result = tester.test((1164287633,1164287633,1164287633, 2999663906, 767981813774,))
+=======
+tester = EpochTester()
+result = tester.test((962961041, 2597010722, 767981813768,))
+>>>>>>> 9bac70131b743e0d6168d1bf5ff366e62cb18e79
 print(result)
 
 inputString = "YYYYYYMM MMDDDDDh hhhhmmmm mmssssss"
