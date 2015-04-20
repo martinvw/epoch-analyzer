@@ -140,14 +140,20 @@ class FATTimestampScorer(DateTimeBitPackedScorer):
         return int(self.mul(value, 2, reverse))
 
 
-class SiemensDVRTimestampScorer(DateTimeBitPackedScorer):
+class FourByteBitTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, minDate, maxDate):
         format_string = 'YYYYYYMM MMDDDDDh hhhhmmmm mmssssss'
-        super(SiemensDVRTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
+        super(FourByteBitTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
 
     def yearTransformation(self, value, reverse=False):
         return self.plus(value, 1970, reverse)
 
+class FourByteBitTimestampScorer2000(FourByteBitTimestampScorer):
+    def __init__(self, minDate, maxDate):
+        super(FourByteBitTimestampScorer2000, self).__init__(minDate, maxDate)
+
+    def yearTransformation(self, value, reverse=False):
+        return self.plus(value, 2000, reverse)
 
 class FiveByteBitTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, minDate, maxDate):

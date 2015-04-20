@@ -10,7 +10,7 @@ from .unit import *
 from collections import Counter, OrderedDict, Iterable
 import logging
 
-__all__ = ["EpochTester", "DateTimeCompositionScorer", "FATTimestampScorer", "SiemensDVRTimestampScorer", "FiveByteBitTimestampScorer"]
+__all__ = ["EpochTester", "DateTimeCompositionScorer", "FATTimestampScorer", "FourByteBitTimestampScorer", "FourByteBitTimestampScorer2000", "FiveByteBitTimestampScorer"]
 
 class EpochTester(object):
     DEFAULT_MIN_DAYS = 9 * 365
@@ -85,5 +85,6 @@ class EpochTester(object):
                 self.testClasses[full_name] = DateTimeCompositionScorer(self.min_date, self.max_date, epoch, unit)
 
         self.testClasses['FAT timestamp'] = FATTimestampScorer(self.min_date, self.max_date)
-        self.testClasses['Siemens DVR timestamp']  = SiemensDVRTimestampScorer(self.min_date, self.max_date)
+        self.testClasses['4-Bytes bit-based timestamp']  = FourByteBitTimestampScorer(self.min_date, self.max_date)
+        self.testClasses['4-Bytes bit-based timestamp since 2000']  = FourByteBitTimestampScorer2000(self.min_date, self.max_date)
         self.testClasses['5-Bytes bit-based timestamp']  = FiveByteBitTimestampScorer(self.min_date, self.max_date)
