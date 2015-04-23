@@ -148,7 +148,6 @@ class FourByteBitTimestampScorer(DateTimeBitPackedScorer):
     def year_transformation(self, value, reverse=False):
         return self.plus(value, 1970, reverse)
 
-
 class FourByteBitTimestampScorer2000(FourByteBitTimestampScorer):
     def __init__(self, minDate, maxDate):
         super(FourByteBitTimestampScorer2000, self).__init__(minDate, maxDate)
