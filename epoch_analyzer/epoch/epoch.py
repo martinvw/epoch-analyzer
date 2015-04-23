@@ -8,6 +8,10 @@ class Epoch(metaclass = ABCMeta):
     def epoch(self):
         return
 
+    def __str__(self):
+        return type(self).__name__
+
+
 class DotNetEpoch(Epoch):
     def epoch(self):
         return datetime.datetime(1, 1, 1)

@@ -17,4 +17,21 @@ Installation
 
    ``pip install epoch-analyzer``
 
-   Alternatively, you can install download or clone this repo and call ``pip install -e .``.
+   Alternatively, you can download or clone this repo and call ``pip install -e .``.
+
+Usage in Python
+---------------
+
+Import the EpochTester from the package epoch_analyzer
+
+from epoch_analyzer import EpochTester
+
+If you desire you can pass a min_date and max_date which are used for reference.
+
+Given the resulting object you can call test or convert, for either testing numbers for a probable format or (batch) converting lists of numbers to dates.
+
+Usage EpochTester.test
+----------------------
+You can pass one number, an iterable list of numbers or for example a counter to this method.
+
+For each number one test conversion is performed 

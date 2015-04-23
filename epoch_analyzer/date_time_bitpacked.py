@@ -2,6 +2,7 @@ import datetime
 import math
 import operator
 import re
+import logging
 
 from collections import OrderedDict
 
@@ -11,30 +12,29 @@ from .date_time import DateTimeScorer
 class DateTimeBitPackedScorer(DateTimeScorer):
     def __init__(self, minDate, maxDate, mapping = None, date_format_string = None, ordered = True):
         if date_format_string:
-            self.mapping = DateTimeBitPackedScorer.convertStringToMapping(date_format_string)
+            self.mapping = DateTimeBitPackedScorer.convert_string_to_mapping(date_format_string)
         elif mapping:
             self.mapping = mapping
         else:
             raise Exception("Illegal argument, either date_format_string or prepaired mapping")
         super(DateTimeBitPackedScorer, self).__init__(minDate, maxDate, ordered)
 
-    def convertToDate(self, number):
+    def convert_to_date(self, number):
         # bit magic only works with integers
         number = int(number)
         try:
-            day    = self.dayTransformation     ((number >> self.bitshift('D')) & self.mask('D'))
-            month  = self.monthTransformation   ((number >> self.bitshift('M')) & self.mask('M'))
-            year   = self.yearTransformation    ((number >> self.bitshift('Y')) & self.mask('Y'))
-            second = self.secondTransformation  ((number >> self.bitshift('s')) & self.mask('s'))
-            minute = self.minuteTransformation  ((number >> self.bitshift('m')) & self.mask('m'))
-            hour   = self.hourTransformation    ((number >> self.bitshift('h')) & self.mask('h'))
+            day    = self.day_transformation     ((number >> self.bitshift('D')) & self.mask('D'))
+            month  = self.month_transformation   ((number >> self.bitshift('M')) & self.mask('M'))
+            year   = self.year_transformation    ((number >> self.bitshift('Y')) & self.mask('Y'))
+            second = self.second_transformation  ((number >> self.bitshift('s')) & self.mask('s'))
+            minute = self.minute_transformation  ((number >> self.bitshift('m')) & self.mask('m'))
+            hour   = self.hour_transformation    ((number >> self.bitshift('h')) & self.mask('h'))
             return datetime.datetime(year, month, day, hour, minute, second)
         except ValueError:
             # eg. ValueError: month must be in 1..12
             return
-        except RuntimeError as err:
-            print('I did some naughty, I ate an exception')
-            print(err)
+        except Exception as err:
+            logging.warning(err)
             return
 
     def bitshift(self, type):
@@ -43,20 +43,20 @@ class DateTimeBitPackedScorer(DateTimeScorer):
     def mask(self, type):
         return (1 << self.mapping[type][1]) - 1
 
-    def convertToNumber(self, date):
-        result =  self.secondTransformation(date.second, reverse=True) << self.mapping['s'][0]
-        result += self.minuteTransformation(date.minute, reverse=True) << self.mapping['m'][0]
-        result += self.hourTransformation(date.hour, reverse=True)     << self.mapping['h'][0]
-        result += self.dayTransformation(date.day, reverse=True)       << self.mapping['D'][0]
-        result += self.monthTransformation(date.month, reverse=True)   << self.mapping['M'][0]
-        result += self.yearTransformation(date.year, reverse=True)     << self.mapping['Y'][0]
+    def convert_to_number(self, date):
+        result =  self.second_transformation(date.second, reverse=True) << self.mapping['s'][0]
+        result += self.minute_transformation(date.minute, reverse=True) << self.mapping['m'][0]
+        result += self.hour_transformation(date.hour, reverse=True)     << self.mapping['h'][0]
+        result += self.day_transformation(date.day, reverse=True)       << self.mapping['D'][0]
+        result += self.month_transformation(date.month, reverse=True)   << self.mapping['M'][0]
+        result += self.year_transformation(date.year, reverse=True)     << self.mapping['Y'][0]
         return result
 
     def __str__(self):
-        return self.convertMappingToString(self.mapping)
+        return "BitMask " + self.convert_mapping_to_string(self.mapping)
 
     @staticmethod
-    def convertMappingToString(mapping):
+    def convert_mapping_to_string(mapping):
         max_value = 0
         values = {}
         result = ''
@@ -79,7 +79,7 @@ class DateTimeBitPackedScorer(DateTimeScorer):
         return re.sub('([DMYsmh\?]{8})', r'\g<1> ', result).strip()
 
     @staticmethod
-    def convertStringToMapping(string):
+    def convert_string_to_mapping(string):
         # trim any whitespace in between
         string = string.replace(' ', '')
 
@@ -104,22 +104,22 @@ class DateTimeBitPackedScorer(DateTimeScorer):
 
         return mapping
 
-    def yearTransformation(self, value, reverse=False):
+    def year_transformation(self, value, reverse=False):
         return value
 
-    def monthTransformation(self, value, reverse=False):
+    def month_transformation(self, value, reverse=False):
         return value
 
-    def dayTransformation(self, value, reverse=False):
+    def day_transformation(self, value, reverse=False):
         return value
 
-    def hourTransformation(self, value, reverse=False):
+    def hour_transformation(self, value, reverse=False):
         return value
 
-    def minuteTransformation(self, value, reverse=False):
+    def minute_transformation(self, value, reverse=False):
         return value
 
-    def secondTransformation(self, value, reverse=False):
+    def second_transformation(self, value, reverse=False):
         return value
 
     def plus(self, a, b, reverse=False):
@@ -133,20 +133,28 @@ class FATTimestampScorer(DateTimeBitPackedScorer):
         format_string = "YYYYYYYM MMMDDDDD hhhhhmmm mmmsssss"
         super(FATTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
 
-    def yearTransformation(self, value, reverse=False):
+    def year_transformation(self, value, reverse=False):
         return self.plus(value, 1980, reverse)
 
-    def secondTransformation(self, value, reverse=False):
+    def second_transformation(self, value, reverse=False):
         return int(self.mul(value, 2, reverse))
 
 
-class SiemensDVRTimestampScorer(DateTimeBitPackedScorer):
+class FourByteBitTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, minDate, maxDate):
         format_string = 'YYYYYYMM MMDDDDDh hhhhmmmm mmssssss'
-        super(SiemensDVRTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
+        super(FourByteBitTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
 
-    def yearTransformation(self, value, reverse=False):
+    def year_transformation(self, value, reverse=False):
         return self.plus(value, 1970, reverse)
+
+
+class FourByteBitTimestampScorer2000(FourByteBitTimestampScorer):
+    def __init__(self, minDate, maxDate):
+        super(FourByteBitTimestampScorer2000, self).__init__(minDate, maxDate)
+
+    def year_transformation(self, value, reverse=False):
+        return self.plus(value, 2000, reverse)
 
 
 class FiveByteBitTimestampScorer(DateTimeBitPackedScorer):
@@ -154,5 +162,5 @@ class FiveByteBitTimestampScorer(DateTimeBitPackedScorer):
         format_string = 'MMMMDDDD Dhhhhhmm mmmmssss ss?????? YYYYYYYY'
         super(FiveByteBitTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string, ordered=False)
 
-    def yearTransformation(self, value, reverse=False):
+    def year_transformation(self, value, reverse=False):
         return self.plus(value, 2000, reverse)
