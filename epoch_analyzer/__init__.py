@@ -2,6 +2,7 @@
 __version__ = '0.1'
 
 import re
+import datetime
 
 from .date_time_composition import *
 from .date_time_bitpacked import *
@@ -20,6 +21,12 @@ class EpochTester(object):
         today = datetime.datetime.today()
         if min_date == None: min_date = today - datetime.timedelta(days = self.DEFAULT_MIN_DAYS)
         if max_date == None: max_date = today + datetime.timedelta(days = self.DEFAULT_MAX_DAYS)
+
+        if isinstance(min_date, datetime.date):  min_date = datetime.datetime.combine(min_date, datetime.datetime.min.time())
+        if isinstance(max_date, datetime.date):  max_date = datetime.datetime.combine(max_date, datetime.datetime.min.time())
+
+        print(min_date)
+        print(max_date)
 
         self.min_date = min_date
         self.max_date = max_date
