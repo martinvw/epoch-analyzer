@@ -102,6 +102,9 @@ class DateTimeBitPackedScorer(DateTimeScorer):
         # add the remaining data
         mapping[previous] = (len(string)-position, count, )
 
+        # leave out the ? in the mappings
+        if '?' in mapping: del mapping['?']
+
         return mapping
 
     def year_transformation(self, value, reverse=False):

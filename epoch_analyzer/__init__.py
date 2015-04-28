@@ -27,6 +27,7 @@ class EpochTester(object):
         self.__init_testers()
 
     def test(self, values, return_percentage = False):
+        if not isinstance(values, Iterable): values = {values}
         if not isinstance(values, Counter): values = Counter(values)
 
         result = Counter()
@@ -68,6 +69,10 @@ class EpochTester(object):
 
     def get_convertor(self, scorer):
         return self.__test_classes[scorer]
+
+
+    def get_available_testers(self):
+        return self.__test_classes.keys()
 
 
     def __init_testers(self):
