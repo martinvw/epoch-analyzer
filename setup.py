@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import os
+import sys
+
 from setuptools import setup
 
 
@@ -10,8 +12,16 @@ def get_metadata():
 
 metadata = get_metadata()
 
+if sys.argv[-1] == 'publish':
+    os.system('cd docs && make html')
+    os.system('python setup.py sdist upload')
+    print("You probably want to also tag the version now:")
+    print("  git tag -a %s -m 'version %s'" % (metadata['version'], metadata['version']))
+    print("  git push --tags")
+    sys.exit()
+
 try:
-    long_description = open("README.md", "r").read()
+    long_description = open("README.rst", "r").read()
 except Exception:
     long_description = None
 

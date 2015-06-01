@@ -25,13 +25,11 @@ class EpochTester(object):
         if isinstance(min_date, datetime.date):  min_date = datetime.datetime.combine(min_date, datetime.datetime.min.time())
         if isinstance(max_date, datetime.date):  max_date = datetime.datetime.combine(max_date, datetime.datetime.min.time())
 
-        print(min_date)
-        print(max_date)
-
         self.min_date = min_date
         self.max_date = max_date
 
         self.__init_testers()
+
 
     def test(self, values, return_percentage = False):
         if not isinstance(values, Iterable): values = {values}
@@ -55,6 +53,7 @@ class EpochTester(object):
 
         return result
 
+
     def convert(self, values, force_scorer = None):
         if not isinstance(values, Iterable): values = {values}
 
@@ -74,12 +73,17 @@ class EpochTester(object):
 
         return result
 
+
     def get_convertor(self, scorer):
         return self.__test_classes[scorer]
 
 
     def get_available_testers(self):
         return self.__test_classes.keys()
+
+
+    def register_test_class(self, name, timestamp_class):
+        self.__test_classes[name] = timestamp_class(self.min_date, self.max_date)
 
 
     def __init_testers(self):
