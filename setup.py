@@ -36,7 +36,7 @@ setup(
     download_url='https://github.com/martinvw/epoch-analyzer/tarball/v' + metadata['version'],
     description='Utility detect probable date/time formats given a numeric input.',
     long_description=long_description,
-    # entry_points={'console_scripts': ['epoch_detector = epochdetector.epochdetector:main']},
+    entry_points={'console_scripts': ['epoch = epoch_analyzer.epoch_console:main']},
     include_package_data=True,
     install_requires=[],
     keywords=['datetime', 'timestamp', 'epoch'],
