@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import argparse
+import binascii
 import calendar
 import datetime
 import re
+import struct
 import sys
 
 from epoch_analyzer import EpochTester
@@ -14,6 +16,7 @@ def main():
     parser.add_argument('--summary', '-s', action='store_true', help='show summary instead of individual conversions.')
     parser.add_argument('--unixtime', '-u', action='store_true', help='show dates as unixtime.')
     parser.add_argument('--hex', action='store_true', help='Process the input as hexadecimal, tests for little and big endian.')
+    # optional force an endianess
 
     parser.add_argument('--file', '-f', required=False, help='a file containing numeric times to be converted', type=argparse.FileType('r'))
     parser.add_argument('numbers', nargs='*', help='supply the input to analyze')
@@ -61,9 +64,11 @@ def convert_numbers(numbers, number, hex):
         numbers.append(float(number))
     else:
         number = re.sub(r"\s", '', number)
-        numbers.append(int(number, 16))
-        # convert to both little and big endian
+        numbers.append(int.from_bytes(binascii.unhexlify(number), byteorder='little'))
+        numbers.append(int.from_bytes(binascii.unhexlify(number), byteorder='big'))
         return
+
+    # handle errors for the value conversion
 
 def print_summary(numbers, tester, args):
     print("Summary for %d inputs:" % len(numbers))
@@ -91,7 +96,7 @@ def print_conversion(numbers, tester, args):
     for number, matches in result.items():
         print("For input %d:" % number)
         if matches == None or len(matches) == 0:
-            print("\tNo matching patern was found")
+            print("\tNo matching pattern was found")
         else:
             for match, date in matches:
                 print("\t%s (%s)" % (match, date))

@@ -74,6 +74,8 @@ Make a summary of the matches from a list of timestamps from a file.
 
 ``epoch -f input.txt --summary``
 
+Output:
+
 .. code-block:: sh
 
   Summary for 5 inputs:
@@ -81,11 +83,26 @@ Make a summary of the matches from a list of timestamps from a file.
   	2.	Number Of Minutes Since Mac OSX Epoch:	40%
   	3.	Number Of Mili Seconds Since Unix Epoch:	20%
 
-Supply a minimum (which is out-of-range for this unixtime):
+Supply a minimum (which is in this case out-of-range for this unixtime):
 
 ``epoch --min 2014-12-01 1394543556``
+
+Output:
 
 .. code-block:: sh
 
   For input 1394543556:
-    No matching patern was found
+    No matching pattern was found
+
+A space seperated hexadecimal input is supported:
+
+``epoch "aa bb" --hex``
+
+Output (Note that big and little endian are both tested):
+
+.. code-block:: sh
+
+  For input 48042:
+  	No matching pattern was found
+  For input 43707:
+  	No matching pattern was found
