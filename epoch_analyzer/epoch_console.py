@@ -2,18 +2,21 @@
 import argparse
 import calendar
 import datetime
+import re
 import sys
 
 from epoch_analyzer import EpochTester
 
 def main():
     parser = argparse.ArgumentParser(description='Analyse for possible datetime values.')
-    parser.add_argument('--min', metavar='<N>', help='supply the minimum date for analysis', type=valid_date)
-    parser.add_argument('--max', metavar='<N>', help='supply the maximum date for analysis', type=valid_date)
+    parser.add_argument('--min', help='supply the minimum date for analysis', type=valid_date)
+    parser.add_argument('--max', help='supply the maximum date for analysis', type=valid_date)
     parser.add_argument('--summary', '-s', action='store_true', help='show summary instead of individual conversions.')
     parser.add_argument('--unixtime', '-u', action='store_true', help='show dates as unixtime.')
-    parser.add_argument('--file', '-f',metavar='<N>', help='a file containing numeric times to be converted', type=argparse.FileType('r'))
-    parser.add_argument('numbers', nargs='*', type=float, help='supply the input to analyze')
+    parser.add_argument('--hex', action='store_true', help='Process the input as hexadecimal, tests for little and big endian.')
+
+    parser.add_argument('--file', '-f', required=False, help='a file containing numeric times to be converted', type=argparse.FileType('r'))
+    parser.add_argument('numbers', nargs='*', help='supply the input to analyze')
 
     args = parser.parse_args()
 
@@ -29,23 +32,38 @@ def main():
 
 def valid_date(s):
     try:
-        return datetime.strptime(s, "%Y-%m-%d")
+        return datetime.datetime.strptime(s, "%Y-%m-%d")
     except ValueError:
         msg = "Not a valid date: '{0}'.".format(s)
         raise argparse.ArgumentTypeError(msg)
 
 def get_input_numbers(parser, args):
+    if args.file and len(args.numbers) > 0:
+        print("Warning: a file and commandline option given, using only file input!")
+
+    numbers = []
     if args.file:
-        numbers = []
         for number in args.file:
-            numbers.append(float(number.strip()))
-        return numbers
+            convert_numbers(numbers, number, args.hex)
     elif len(args.numbers) > 0:
-        return args.numbers
+        for number in args.numbers:
+            convert_numbers(numbers, number, args.hex)
     else:
-        print("Supply either a file with numbers or a list of numbers.")
+        print("Error: supply either a file with numbers or a list of numbers.")
         parser.print_help()
-        sys.exit();
+        sys.exit()
+
+    return numbers
+
+def convert_numbers(numbers, number, hex):
+    number = number.strip()
+    if not hex:
+        numbers.append(float(number))
+    else:
+        number = re.sub(r"\s", '', number)
+        numbers.append(int(number, 16))
+        # convert to both little and big endian
+        return
 
 def print_summary(numbers, tester, args):
     print("Summary for %d inputs:" % len(numbers))
@@ -59,11 +77,13 @@ def print_summary(numbers, tester, args):
 def print_to_pipe(numbers, tester, args):
     result = tester.convert(numbers)
     for number, matches in result.items():
-        if len(matches) > 0:
+        if matches and len(matches) > 0:
             if args.unixtime:
                 print(matches[0][1].timestamp())
             else:
                 print("%s" % (matches[0][1]))
+        else:
+            print(None)
 
 def print_conversion(numbers, tester, args):
     result = tester.convert(numbers)
