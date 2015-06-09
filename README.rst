@@ -44,36 +44,38 @@ For each number one test conversion is performed, it then check which format mat
 Usage EpochTester.convert
 -------------------------
 
+Lorem ipsum
 
 
 Usage from the command line
 ---------------------------
 
-When the module is correctly installed, the command `epoch` should be available. There are a lot of options, which are listed when not passing any argument.
+When the module is correctly installed, the command `epoch` should be available from your path. There are a lot of options, which are listed calling the command without any argument.
 
 Some examples:
 
 Just convert a single value:
 
-  ``epoch 1394543556``
+``epoch 1394543556``
 
-Output::
+Output:
 
-.. code:: sh
+.. code-block:: guess
+
   For input 1394543556:
     Number Of Seconds Since Unix Epoch (2014-03-11 13:12:36)
 
 
 Convert a list of timestamp from a file and output them to a file as unix timestamp.
 
-  ``epoch -f input.txt -u > output-timestamps.txt``
+``epoch -f input.txt -u > output-timestamps.txt``
 
 Make a summary of the matches from a list of timestamps from a file.
 
-  ``epoch -f input.txt --summary``
+``epoch -f input.txt --summary``
 
 ....
 
 Supply a minimum:
 
-  ``epoch --min 2013-12-01 1394543556``
+``epoch --min 2013-12-01 1394543556``
