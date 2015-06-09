@@ -60,7 +60,7 @@ Just convert a single value:
 
 Output:
 
-.. code-block:: guess
+.. code-block:: sh
 
   For input 1394543556:
     Number Of Seconds Since Unix Epoch (2014-03-11 13:12:36)
@@ -74,8 +74,18 @@ Make a summary of the matches from a list of timestamps from a file.
 
 ``epoch -f input.txt --summary``
 
-....
+.. code-block:: sh
 
-Supply a minimum:
+  Summary for 5 inputs:
+  	1.	Number Of Seconds Since Unix Epoch:	40%
+  	2.	Number Of Minutes Since Mac OSX Epoch:	40%
+  	3.	Number Of Mili Seconds Since Unix Epoch:	20%
 
-``epoch --min 2013-12-01 1394543556``
+Supply a minimum (which is out-of-range for this unixtime):
+
+``epoch --min 2014-12-01 1394543556``
+
+.. code-block:: sh
+
+  For input 1394543556:
+    No matching patern was found

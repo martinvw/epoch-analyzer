@@ -70,7 +70,7 @@ def print_summary(numbers, tester, args):
     result = tester.test(numbers, True)
     counter = 1
 
-    for i, j in result.items():
+    for i, j in result.most_common():
         print("\t%d.\t%s:\t%d%%" % (counter, i, j))
         counter += 1
 
