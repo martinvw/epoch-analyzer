@@ -28,7 +28,7 @@ Usage in Python
 
 Import the EpochTester from the package epoch_analyzer
 
-from epoch_analyzer import EpochTester
+``from epoch_analyzer import EpochTester``
 
 If you desire you can pass a min_date and max_date which are used for reference.
 
@@ -39,7 +39,19 @@ Usage EpochTester.test
 
 You can pass one number, an iterable list of numbers (for example a counter) to this method.
 
-For each number one test conversion is performed, it then check which format matches most of the values, the likely options are listed in order likelyhood
+For each number one test conversion is performed, it then check which format matches most of the values, a counter object is returned. By calling most_common on that object, the items can be iterated in order starting at the most likely options.
+
+
+.. code-block:: python
+
+  from epoch_analyzer import EpochTester
+
+  tester = EpochTester()
+  results = tester.test({12345435, 231920232})
+
+  for match, occurrence in result.most_common():
+        print("t%s:\t%d%%" % (match, occurrence))
+
 
 Usage EpochTester.convert
 -------------------------
