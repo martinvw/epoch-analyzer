@@ -64,7 +64,7 @@ def convert_numbers(numbers, number, hex):
         numbers.append(float(number))
     else:
         number = re.sub(r"\s", '', number)
-        byte_string = binascii.unhexlify((bytes(number, 'utf-8'))
+        byte_string = binascii.unhexlify((bytes(number, 'utf-8')))
         numbers.append(int.from_bytes(byte_string, byteorder='little'))
         numbers.append(int.from_bytes(byte_string, byteorder='big'))
         return
