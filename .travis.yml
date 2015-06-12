@@ -4,9 +4,8 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - "3.5"
-  - "pypy"
-  
+  - "nightly"
+
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - pip install coveralls
