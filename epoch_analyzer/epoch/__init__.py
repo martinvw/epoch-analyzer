@@ -1,3 +1,3 @@
 from .epoch import *
 
-__all__ = ["MacOSXEpoch", "AOLEpoch", "UnixEpoch", "ExcelEpoch", "MacOSEpoch", "NTPEpoch", "MicrosoftEpoch", "DotNetEpoch",]
+__all__ = ["MacOSXEpoch", "FATEpoch", "UnixEpoch", "ExcelEpoch", "MacOSEpoch", "NTPEpoch", "MicrosoftEpoch", "DotNetEpoch",]

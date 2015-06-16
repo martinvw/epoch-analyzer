@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__version__ = '0.2'
+__version__ = '0.3'
 
 import re
 import datetime
@@ -88,7 +88,7 @@ class EpochTester(object):
 
     def __init_testers(self):
         units = {TicksUnit(), MicroSecondsUnit(), MiliSecondsUnit(), SecondsUnit(), MinutesUnit(), DaysUnit()}
-        epochs = {MacOSXEpoch(), UnixEpoch(), ExcelEpoch(), MacOSEpoch(), NTPEpoch(), MicrosoftEpoch(), DotNetEpoch(), AOLEpoch()}
+        epochs = {MacOSXEpoch(), UnixEpoch(), ExcelEpoch(), MacOSEpoch(), NTPEpoch(), MicrosoftEpoch(), DotNetEpoch(), FATEpoch()}
 
         first_cap_re = re.compile('(.)([A-Z][a-z]+)')
         all_cap_re = re.compile('([a-z0-9])([A-Z])')
