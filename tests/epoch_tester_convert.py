@@ -19,7 +19,7 @@ class EpochTesterConvertTest(unittest.TestCase):
         value_numeric = 2999663906
         value = self.tester.convert(value_numeric)
         self.assertEqual(len(value),  1)
-        self.assertEqual(value.get(value_numeric)[0][0], '4-Bytes bit-based timestamp')
+        self.assertEqual(value.get(value_numeric)[0][0], '4-Bytes bit-based timestamp since 1970')
         self.assertEqual(value.get(value_numeric)[0][1], self.reference_date)
 
     def test_single_5byte(self):
@@ -39,7 +39,7 @@ class EpochTesterConvertTest(unittest.TestCase):
         self.assertEqual(value.get(1164287633)[0][0], 'FAT timestamp')
         self.assertEqual(value.get(1164287633)[0][1], self.reference_date)
 
-        self.assertEqual(value.get(2999663906)[0][0], '4-Bytes bit-based timestamp')
+        self.assertEqual(value.get(2999663906)[0][0], '4-Bytes bit-based timestamp since 1970')
         self.assertEqual(value.get(2999663906)[0][1], self.reference_date)
 
         self.assertEqual(value.get(767981813774)[0][0], '5-Bytes bit-based timestamp')

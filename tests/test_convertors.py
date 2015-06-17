@@ -9,7 +9,7 @@ class ConvertorTest(unittest.TestCase):
         self.reference_date = datetime.datetime(2014,11,5,19,40,48)
 
     def test_four_bytes_bit_bases(self):
-        scorer = self.tester.get_convertor('4-Bytes bit-based timestamp')
+        scorer = self.tester.get_convertor('4-Bytes bit-based timestamp since 1970')
         result = scorer.convert_to_number(self.reference_date)
         self.assertEqual(result, 2999663152)
         self.assertEqual(scorer.convert_to_date(result), self.reference_date)

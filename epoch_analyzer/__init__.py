@@ -78,8 +78,13 @@ class EpochTester(object):
         # magic number 5, is indeed arbitrary chosen
         if len(requested_label) < 5: return
 
+        if requested_label in self.__test_classes:
+            return self.__test_classes[requested_label]
+
+        requested_label = requested_label.lower()
+
         for label, scorer in self.__test_classes.items():
-            if label.startswith(requested_label):
+            if label.lower().startswith(requested_label):
                 return scorer
 
 
@@ -107,6 +112,6 @@ class EpochTester(object):
                 self.__test_classes[full_name] = scorer
 
         self.__test_classes['FAT timestamp'] = FATTimestampScorer(self.min_date, self.max_date)
-        self.__test_classes['4-Bytes bit-based timestamp']  = FourByteBitTimestampScorer(self.min_date, self.max_date)
+        self.__test_classes['4-Bytes bit-based timestamp since 1970']  = FourByteBitTimestampScorer(self.min_date, self.max_date)
         self.__test_classes['4-Bytes bit-based timestamp since 2000']  = FourByteBitTimestampScorer2000(self.min_date, self.max_date)
         self.__test_classes['5-Bytes bit-based timestamp']  = FiveByteBitTimestampScorer(self.min_date, self.max_date)
