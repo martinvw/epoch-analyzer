@@ -74,8 +74,13 @@ class EpochTester(object):
         return result
 
 
-    def get_convertor(self, scorer):
-        return self.__test_classes[scorer]
+    def get_convertor(self, requested_label):
+        # magic number 5, is indeed arbitrary chosen
+        if len(requested_label) < 5: return
+
+        for label, scorer in self.__test_classes.items():
+            if label.startswith(requested_label):
+                return scorer
 
 
     def get_available_testers(self):
