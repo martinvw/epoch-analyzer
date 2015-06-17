@@ -11,7 +11,7 @@ class DateTimeScorer(metaclass = ABCMeta):
         self.max_value = self.convert_to_number(self.max_date)
 
 
-    def score(self, number):
+    def score(self, number, byte_size=-1):
         if self.ordered:
             matches = self.min_value < number and self.max_value > number
         else:

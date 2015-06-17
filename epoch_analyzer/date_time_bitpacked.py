@@ -10,14 +10,15 @@ from .date_time import DateTimeScorer
 
 
 class DateTimeBitPackedScorer(DateTimeScorer):
-    def __init__(self, minDate, maxDate, mapping = None, date_format_string = None, ordered = True):
+    def __init__(self, min_date, max_date, mapping = None, date_format_string = None, ordered = True, bit_length = -1):
+        self.bit_length = bit_length
         if date_format_string:
             self.mapping = DateTimeBitPackedScorer.convert_string_to_mapping(date_format_string)
         elif mapping:
             self.mapping = mapping
         else:
             raise Exception("Illegal argument, either date_format_string or prepaired mapping")
-        super(DateTimeBitPackedScorer, self).__init__(minDate, maxDate, ordered)
+        super(DateTimeBitPackedScorer, self).__init__(min_date, max_date, ordered)
 
     def convert_to_date(self, number):
         # bit magic only works with integers
@@ -36,6 +37,14 @@ class DateTimeBitPackedScorer(DateTimeScorer):
         except Exception as err:
             logging.warning(err)
             return
+
+    def score(self, number, byte_size = -1):
+        if byte_size > 0 and byte_size * 8 != self.bit_length:
+            return 0
+        elif self.bit_length > 0 and number.bit_length() > self.bit_length:
+            return 0
+        else:
+            return super(DateTimeBitPackedScorer, self).score(number)
 
     def bitshift(self, type):
         return self.mapping[type][0]
@@ -132,9 +141,9 @@ class DateTimeBitPackedScorer(DateTimeScorer):
        return operator.mul(a, b) if not reverse else operator.truediv(a,b)
 
 class FATTimestampScorer(DateTimeBitPackedScorer):
-    def __init__(self, minDate, maxDate):
+    def __init__(self, min_date, max_date):
         format_string = "YYYYYYYM MMMDDDDD hhhhhmmm mmmsssss"
-        super(FATTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
+        super(FATTimestampScorer, self).__init__(min_date, max_date, bit_length=32, date_format_string=format_string)
 
     def year_transformation(self, value, reverse=False):
         return self.plus(value, 1980, reverse)
@@ -144,25 +153,25 @@ class FATTimestampScorer(DateTimeBitPackedScorer):
 
 
 class FourByteBitTimestampScorer(DateTimeBitPackedScorer):
-    def __init__(self, minDate, maxDate):
+    def __init__(self, min_date, max_date):
         format_string = 'YYYYYYMM MMDDDDDh hhhhmmmm mmssssss'
-        super(FourByteBitTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string)
+        super(FourByteBitTimestampScorer, self).__init__(min_date, max_date, bit_length=32, date_format_string=format_string)
 
     def year_transformation(self, value, reverse=False):
         return self.plus(value, 1970, reverse)
 
 class FourByteBitTimestampScorer2000(FourByteBitTimestampScorer):
-    def __init__(self, minDate, maxDate):
-        super(FourByteBitTimestampScorer2000, self).__init__(minDate, maxDate)
+    def __init__(self, min_date, max_date):
+        super(FourByteBitTimestampScorer2000, self).__init__(min_date, max_date)
 
     def year_transformation(self, value, reverse=False):
         return self.plus(value, 2000, reverse)
 
 
 class FiveByteBitTimestampScorer(DateTimeBitPackedScorer):
-    def __init__(self, minDate, maxDate):
+    def __init__(self, min_date, max_date):
         format_string = 'MMMMDDDD Dhhhhhmm mmmmssss ss?????? YYYYYYYY'
-        super(FiveByteBitTimestampScorer, self).__init__(minDate, maxDate, date_format_string=format_string, ordered=False)
+        super(FiveByteBitTimestampScorer, self).__init__(min_date, max_date, bit_length=40, date_format_string=format_string, ordered=False)
 
     def year_transformation(self, value, reverse=False):
         return self.plus(value, 2000, reverse)

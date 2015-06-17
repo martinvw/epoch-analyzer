@@ -31,7 +31,7 @@ class EpochTester(object):
         self.__init_testers()
 
 
-    def test(self, values, return_percentage = False):
+    def test(self, values, return_percentage = False, byte_size = -1):
         if not isinstance(values, Iterable): values = {values}
         if not isinstance(values, Counter): values = Counter(values)
 
@@ -42,7 +42,7 @@ class EpochTester(object):
             total_count += count
             # iterate all the different test classes
             for name, scorer in self.__test_classes.items():
-                score = scorer.score(value)
+                score = scorer.score(value, byte_size=byte_size)
                 if score > 0:
                     logging.info("{} could be of type {} with actual date {}".format(value, name, scorer.convert_to_date(value)))
                     result[name] += score * count
