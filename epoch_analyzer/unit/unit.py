@@ -7,7 +7,7 @@ class Unit(metaclass = ABCMeta):
         return
 
 
-    def convertToSeconds(self, number):
+    def convert_to_seconds(self, number):
         return number / self.unit()
 
 
