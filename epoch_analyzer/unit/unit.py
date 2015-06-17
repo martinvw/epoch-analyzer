@@ -1,10 +1,15 @@
 from abc import ABCMeta
 from abc import abstractmethod
+from ..epoch import *
 
 class Unit(metaclass = ABCMeta):
     @abstractmethod
     def unit(self):
         """ this method should be implemented in one of the childs. """
+
+    """Calculate the weight given the unit"""
+    def weight(self, epoch):
+        return 1
 
 
     def convert_to_seconds(self, number):
@@ -20,9 +25,17 @@ class DaysUnit(Unit):
         return 1 / (60 * 60 * 24)
 
 
+    def weight(self, epoch):
+        instance = isinstance(epoch, ExcelEpoch)
+        return .5 if instance else .01
+
+
 class MinutesUnit(Unit):
     def unit(self):
         return 1 / 60
+
+    def weight(self, epoch):
+        return .2
 
 
 class SecondsUnit(Unit):
@@ -43,3 +56,8 @@ class MicroSecondsUnit(Unit):
 class TicksUnit(Unit):
     def unit(self):
         return 1000 * 1000 * 10
+
+
+    def weight(self, epoch):
+        instance = isinstance(epoch, MicrosoftEpoch)
+        return .5 if instance else .01
