@@ -7,7 +7,8 @@ class Epoch(metaclass = ABCMeta):
     """Explanations are (unless stated otherwise) from http://en.wikipedia.org/wiki/Epoch_(reference_data)"""
     @abstractmethod
     def epoch(self):
-        return
+        """ this method should be implemented in one of the childs. """
+
 
     def __str__(self):
         return type(self).__name__ + "("+str(self.epoch().date())+")"

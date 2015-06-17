@@ -4,7 +4,7 @@ from abc import abstractmethod
 class Unit(metaclass = ABCMeta):
     @abstractmethod
     def unit(self):
-        return
+        """ this method should be implemented in one of the childs. """
 
 
     def convertToSeconds(self, number):
