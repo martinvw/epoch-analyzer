@@ -8,8 +8,10 @@ class DateTimeCompositionScorer(DateTimeScorer):
         self.unit  = unit
         super(DateTimeCompositionScorer, self).__init__(minDate, maxDate)
 
+
     def convert_to_number(self, date):
         return (date - self.epoch.epoch()).total_seconds() * self.unit.unit()
+
 
     def convert_to_date(self, number):
         try:
@@ -17,6 +19,11 @@ class DateTimeCompositionScorer(DateTimeScorer):
             return self.epoch.epoch() + datetime.timedelta(seconds = secondsSinceEpoch)
         except:
             return -1
+
+
+    def score(self, number):
+        score = super(DateTimeCompositionScorer, self).score(number)
+        return score * self.unit.weight(self.epoch)
 
 
     def __str__(self):

@@ -23,9 +23,9 @@ class DateTimeScorer(metaclass = ABCMeta):
 
     @abstractmethod
     def convert_to_number(self, date):
-        return
+        """ this method should be implemented in one of the childs. """
 
 
     @abstractmethod
     def convert_to_date(self, number):
-        return
+        """ this method should be implemented in one of the childs. """
