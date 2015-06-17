@@ -7,7 +7,7 @@ class Unit(metaclass = ABCMeta):
         """ this method should be implemented in one of the childs. """
 
 
-    def convertToSeconds(self, number):
+    def convert_to_seconds(self, number):
         return number / self.unit()
 
 

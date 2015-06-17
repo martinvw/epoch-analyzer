@@ -44,6 +44,10 @@ class ConvertorTest(unittest.TestCase):
         self.assertEqual(result, 41948.82)
         self.assertEqual(scorer.convert_to_date(result), self.reference_date)
 
+    def test_ms_excel_time_fail(self):
+        scorer = self.tester.get_convertor('Number Of Days Since Excel Epoch')
+        self.assertEqual(scorer.convert_to_date(63550813248000), -1)
+
     def test_osx_time(self):
         scorer = self.tester.get_convertor('Number Of Mili Seconds Since Mac OSX Epoch')
         result = scorer.convert_to_number(self.reference_date)

@@ -13,7 +13,7 @@ class DateTimeCompositionScorer(DateTimeScorer):
 
     def convert_to_date(self, number):
         try:
-            secondsSinceEpoch = number / self.unit.unit()
+            secondsSinceEpoch = self.unit.convert_to_seconds(number)
             return self.epoch.epoch() + datetime.timedelta(seconds = secondsSinceEpoch)
         except:
             return -1
