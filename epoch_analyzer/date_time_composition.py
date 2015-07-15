@@ -21,9 +21,11 @@ class DateTimeCompositionScorer(DateTimeScorer):
             return -1
 
 
-    def score(self, number):
-        score = super(DateTimeCompositionScorer, self).score(number)
-        return score * self.unit.weight(self.epoch)
+    def score(self, number, byte_size=-1):
+        size_weight = 1 if byte_size in {-1, 1,2,4,8} else .5
+
+        score = super(DateTimeCompositionScorer, self).score(number,byte_size=byte_size)
+        return score * self.unit.weight(self.epoch) * size_weight
 
 
     def __str__(self):

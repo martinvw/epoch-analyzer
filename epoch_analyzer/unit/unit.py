@@ -34,8 +34,9 @@ class MinutesUnit(Unit):
     def unit(self):
         return 1 / 60
 
+
     def weight(self, epoch):
-        return .2
+        return .1
 
 
 class SecondsUnit(Unit):
@@ -48,9 +49,19 @@ class MiliSecondsUnit(Unit):
         return 1000
 
 
+    def weight(self, epoch):
+        instance = isinstance(epoch, UnixEpoch)
+        return .8 if instance else .5
+
+
 class MicroSecondsUnit(Unit):
     def unit(self):
         return 1000 * 1000
+
+
+    def weight(self, epoch):
+        instance = isinstance(epoch, MicrosoftEpoch) or isinstance(epoch, UnixEpoch)
+        return .8 if instance else .5
 
 
 class TicksUnit(Unit):
@@ -60,4 +71,4 @@ class TicksUnit(Unit):
 
     def weight(self, epoch):
         instance = isinstance(epoch, MicrosoftEpoch)
-        return .5 if instance else .01
+        return .8 if instance else .1

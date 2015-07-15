@@ -14,7 +14,7 @@ import logging
 __all__ = ["EpochTester", "DateTimeCompositionScorer", "FATTimestampScorer", "FourByteBitTimestampScorer", "FourByteBitTimestampScorer2000", "FiveByteBitTimestampScorer"]
 
 class EpochTester(object):
-    DEFAULT_MIN_DAYS = 9 * 365
+    DEFAULT_MIN_DAYS = 5 * 365
     DEFAULT_MAX_DAYS = 0.5 * 365
 
     def __init__(self, min_date = None, max_date = None):
@@ -36,6 +36,7 @@ class EpochTester(object):
         if not isinstance(values, Counter): values = Counter(values)
 
         result = Counter()
+        percentage = Counter()
         total_count = 0
 
         for value, count in values.items():
@@ -46,10 +47,14 @@ class EpochTester(object):
                 if score > 0:
                     logging.info("{} could be of type {} with actual date {}".format(value, name, scorer.convert_to_date(value)))
                     result[name] += score * count
+                    percentage[name] += count
 
-        for value, count in result.items():
-            result[value] = count / total_count
-            if return_percentage: result[value] *= 100
+        if return_percentage:
+            for value, count in percentage.items():
+                result[value] = (count / total_count) * 100
+        else:
+            for value, count in result.items():
+                result[value] = count / total_count
 
         return result
 

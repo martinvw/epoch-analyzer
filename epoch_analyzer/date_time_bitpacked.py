@@ -41,10 +41,10 @@ class DateTimeBitPackedScorer(DateTimeScorer):
     def score(self, number, byte_size = -1):
         if byte_size > 0 and byte_size * 8 != self.bit_length:
             return 0
-        elif self.bit_length > 0 and number.bit_length() > self.bit_length:
+        elif self.bit_length > 0 and int(number).bit_length() > self.bit_length:
             return 0
         else:
-            return super(DateTimeBitPackedScorer, self).score(number)
+            return super(DateTimeBitPackedScorer, self).score(number) * .9
 
     def bitshift(self, type):
         return self.mapping[type][0]
