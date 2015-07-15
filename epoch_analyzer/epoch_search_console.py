@@ -3,11 +3,13 @@ import argparse
 import binascii
 import calendar
 import datetime
+import random
 import re
 import struct
 import sys
 
 from epoch_analyzer import EpochTester
+from termcolor import colored
 
 def main():
     parser = argparse.ArgumentParser(description='Analyse for possible datetime values.')
@@ -57,7 +59,7 @@ class EpochSearcher(object):
 
                         relative_pos = start % self.table_width
 
-                        key = "%d:%d:%s:%s" % (relative_pos, byte_size, signed, byte_order)
+                        key = "%03d:%d:%s:%s" % (relative_pos, byte_size, signed, byte_order)
 
                         if not key in matches: matches[key] = []
                         matches[key].append(value);
@@ -68,15 +70,43 @@ class EpochSearcher(object):
                         #print("Trying length %d, at pos %d: %d" % (byte_size, start, value))
                         #print("Relative pos: %d" % relative_pos)
 
-        print(matches['4:4:False:little'])
+        row = random.randint(0, (len(result) / self.table_width))
+        start_position = row * self.table_width
+        self.file.seek(start_position, 0)
+        block = self.file.read(self.table_width)
+        hex_string = binascii.b2a_hex(block).upper().decode('utf-8')
+
+        example_results = {}
+
         for key, sub_matches in matches.items():
-            byte_size = int(key.split(':')[1])
-            results = self.tester.test(sub_matches, byte_size=byte_size).most_common(5)
-            for label, score in results:
-                if score > 0.2:
-                    print("%s: %s => %f" % (key, label, score))
+             parts = key.split(':')
+             start_pos = int(parts[0])
+             byte_size = int(parts[1])
+             signed = parts[2]
+             byte_order = parts[3]
+             results = self.tester.test(sub_matches, byte_size=byte_size).most_common(5)
+             for label, score in results:
+                if score > 0.7:
 
+                    value = int.from_bytes(block[start_pos:start_pos + byte_size], byteorder = byte_order, signed = signed)
+                    result = self.tester.get_convertor(label).convert_to_date(value)
+                    string = ""
 
+                    for i, c in enumerate(hex_string):
+                        position = (i / 2)
+                        if position > 0 and position % 4 == 0: string += ' '
+                        if position >= start_pos and position < start_pos + byte_size:
+                            string += colored(c, 'green', attrs=['reverse'])
+                        else:
+                            string += c
+
+                    string += "\t(%s end.)\t%d \t=>   %s %s [%f]" % (byte_order, value, str(result).ljust(22, ' '), label, score)
+                    example_results[key + label] = string
+
+        print("Sample picked from offset: %d" % start_position)
+
+        for key in sorted(example_results):
+            print(example_results[key])
 
 
 if __name__ == '__main__':

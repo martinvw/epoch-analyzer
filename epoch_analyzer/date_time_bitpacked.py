@@ -10,7 +10,7 @@ from .date_time import DateTimeScorer
 
 
 class DateTimeBitPackedScorer(DateTimeScorer):
-    def __init__(self, min_date, max_date, mapping = None, date_format_string = None, ordered = True, bit_length = -1):
+    def __init__(self, min_date, max_date, mapping = None, date_format_string = None, bit_length = -1):
         self.bit_length = bit_length
         if date_format_string:
             self.mapping = DateTimeBitPackedScorer.convert_string_to_mapping(date_format_string)
@@ -18,7 +18,7 @@ class DateTimeBitPackedScorer(DateTimeScorer):
             self.mapping = mapping
         else:
             raise Exception("Illegal argument, either date_format_string or prepaired mapping")
-        super(DateTimeBitPackedScorer, self).__init__(min_date, max_date, ordered)
+        super(DateTimeBitPackedScorer, self).__init__(min_date, max_date, False)
 
     def convert_to_date(self, number):
         # bit magic only works with integers
@@ -30,6 +30,7 @@ class DateTimeBitPackedScorer(DateTimeScorer):
             second = self.second_transformation  ((number >> self.bitshift('s')) & self.mask('s'))
             minute = self.minute_transformation  ((number >> self.bitshift('m')) & self.mask('m'))
             hour   = self.hour_transformation    ((number >> self.bitshift('h')) & self.mask('h'))
+
             return datetime.datetime(year, month, day, hour, minute, second)
         except ValueError:
             # eg. ValueError: month must be in 1..12
@@ -171,7 +172,7 @@ class FourByteBitTimestampScorer2000(FourByteBitTimestampScorer):
 class FiveByteBitTimestampScorer(DateTimeBitPackedScorer):
     def __init__(self, min_date, max_date):
         format_string = 'MMMMDDDD Dhhhhhmm mmmmssss ss?????? YYYYYYYY'
-        super(FiveByteBitTimestampScorer, self).__init__(min_date, max_date, bit_length=40, date_format_string=format_string, ordered=False)
+        super(FiveByteBitTimestampScorer, self).__init__(min_date, max_date, bit_length=40, date_format_string=format_string)
 
     def year_transformation(self, value, reverse=False):
         return self.plus(value, 2000, reverse)
