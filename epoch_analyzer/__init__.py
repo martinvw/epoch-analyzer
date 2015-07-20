@@ -65,7 +65,7 @@ class EpochTester(object):
         result = OrderedDict()
 
         for value in values:
-            result[value] = None
+            result[value] = ()
             # iterate all the different test classes
             for name, scorer in self.__test_classes.items():
                 if force_scorer and force_scorer != name: continue

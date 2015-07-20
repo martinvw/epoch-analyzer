@@ -10,17 +10,7 @@ import sys
 from epoch_analyzer import EpochTester
 
 def main():
-    parser = argparse.ArgumentParser(description='Analyse for possible datetime values.')
-    parser.add_argument('--min', help='supply the minimum date for analysis', type=valid_date)
-    parser.add_argument('--max', help='supply the maximum date for analysis', type=valid_date)
-    parser.add_argument('--summary', '-s', action='store_true', help='show summary instead of individual conversions.')
-    parser.add_argument('--unixtime', '-u', action='store_true', help='show dates as unixtime.')
-    parser.add_argument('--hex', action='store_true', help='Process the input as hexadecimal, tests for little and big endian.')
-    # optional force an endianess
-
-    parser.add_argument('--file', '-f', required=False, help='a file containing numeric times to be converted', type=argparse.FileType('r'))
-    parser.add_argument('numbers', nargs='*', help='supply the input to analyze')
-
+    parser = get_parser()
     args = parser.parse_args()
 
     tester = EpochTester(args.min, args.max)
@@ -32,6 +22,19 @@ def main():
         print_to_pipe(numbers, tester, args)
     else:
         print_conversion(numbers, tester, args)
+
+def get_parser():
+    parser = argparse.ArgumentParser(description='Analyse for possible datetime values.')
+    parser.add_argument('--min', help='supply the minimum date for analysis', type=valid_date)
+    parser.add_argument('--max', help='supply the maximum date for analysis', type=valid_date)
+    parser.add_argument('--summary', '-s', action='store_true', help='show summary instead of individual conversions.')
+    parser.add_argument('--unixtime', '-u', action='store_true', help='show dates as unixtime.')
+    parser.add_argument('--hex', action='store_true', help='Process the input as hexadecimal, tests for little and big endian.')
+    # optional force an endianess
+
+    parser.add_argument('--file', '-f', required=False, help='a file containing numeric times to be converted', type=argparse.FileType('r'))
+    parser.add_argument('numbers', nargs='*', help='supply the input to analyze')
+    return parser
 
 def valid_date(s):
     try:

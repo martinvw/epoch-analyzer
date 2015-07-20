@@ -47,22 +47,57 @@ For each number one test conversion is performed, it then check which format mat
   from epoch_analyzer import EpochTester
 
   tester = EpochTester()
-  results = tester.test({12345435, 231920232})
+  results = tester.test({12345435, 2999663906})
 
-  for match, occurrence in result.most_common():
-        print("t%s:\t%d%%" % (match, occurrence))
+  for match, occurrence in results.most_common():
+        print("\t%s:\t%d%%" % (match, occurrence))
 
 
 Usage EpochTester.convert
 -------------------------
 
-Lorem ipsum
+If you have an unknown type and want conversion to all plausible options you can use this method. If you already know the format its better to fetch a convertor and use that, see alse the option described below.
+
+.. code-block:: python
+
+  from epoch_analyzer import EpochTester
+
+  tester = EpochTester()
+  results = tester.convert({12345435, 2999663906})
+
+  for input, matches in results.items():
+    print("%d: #%d matches" % (input, len(matches)))
+
+    for label, result in matches:
+      print("\t%s:\t%s%%" % (label, result))
+
+Output:
+
+.. code-block:: sh
+
+  2999663906: #1 matches
+  	 4-Bytes bit-based timestamp since 1970:	2014-11-05 19:52:34%
+  12345435: #0 matches
+
+
+Usage for specific conversions
+------------------------------
+
+If you know with which epoch you are working and you are converting single numbers than the conversion is quite simple. In that case you don't have to use the convert method but you just request the specific convertor and use that, see the following example.
+
+.. code-block:: python
+
+  from epoch_analyzer import EpochTester
+
+  convertor = EpochTester().get_convertor('4-Bytes bit-based timestamp since 1970')
+
+  print(convertor.convert_to_date(2999663906)) # prints '2014-11-05 19:52:34'
 
 
 Usage from the command line
 ---------------------------
 
-When the module is correctly installed, the command `epoch` should be available from your path. There are a lot of options, which are listed calling the command without any argument.
+When the module is correctly installed, the command `epoch` should be available from your path. There are a lot of options, which are listed when calling the command without any arguments.
 
 Some examples:
 
@@ -106,7 +141,7 @@ Output:
   For input 1394543556:
     No matching pattern was found
 
-A space seperated hexadecimal input is supported:
+A space separated hexadecimal input is supported:
 
 ``epoch "aa bb" --hex``
 
@@ -118,3 +153,7 @@ Output (Note that big and little endian are both tested):
   	No matching pattern was found
   For input 43707:
   	No matching pattern was found
+
+
+Usage from the command line : scanning binary files
+---------------------------------------------------
