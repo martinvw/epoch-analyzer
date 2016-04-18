@@ -14,7 +14,11 @@ metadata = get_metadata()
 
 if sys.argv[-1] == 'publish':
     os.system('cd docs && make html')
-    os.system('python setup.py sdist upload')
+    os.system('python setup.py sdist')
+
+    print("You probably want to upload it to pypi:")
+    print("  twine upload dist/* -p")
+    
     print("You probably want to also tag the version now:")
     print("  git tag -a %s -m 'version %s'" % (metadata['version'], metadata['version']))
     print("  git push --tags")
