@@ -155,5 +155,53 @@ Output (Note that big and little endian are both tested):
   	No matching pattern was found
 
 
-Usage from the command line : scanning binary files
----------------------------------------------------
+Usage from the command line: scanning binary files
+--------------------------------------------------
+
+When the module is correctly installed (note that termcolor is a prerequisite), the command `epoch_scan` should be available from your path. There are a lot of options, which are listed when calling the command without any arguments.
+
+The table width is required to make columns and spot patterns. If your data has a fixed table width its most of the time easy to detect by just resizing your hex editor until you see clear columns of repeating or similair data being displayed. Compare the following two examples:
+
+.. code-block::
+
+   ª..!B....tI.v..:r.#..gd.....l...._..2..9D.a..T..d...ª..!B ........
+   .wª..!B....tI.w..9r.#..gd.....l...._..2..9D.a..T..d...ª..!B ......
+   ...wª..!B....tI.w..9r.#..gd.....l...._..2..9D.a..T..d...ª..!B ....
+   .....wª..!B....tI.w..9q."..id.....l...._..2..9D.a..T..d...ª..!B ..
+   .......wª..!B....tI.w..9q."..id.....l...._..2..9D.a..T..d...ª..!B 
+   .........w
+   
+.. code-block::
+
+   ª..!B....tI.v..:r.#..gd.....l...._..2..9D.a..T..d...ª..!B .........w
+   ª..!B....tI.w..9r.#..gd.....l...._..2..9D.a..T..d...ª..!B .........w
+   ª..!B....tI.w..9r.#..gd.....l...._..2..9D.a..T..d...ª..!B .........w
+   ª..!B....tI.w..9q."..id.....l...._..2..9D.a..T..d...ª..!B .........w
+   ª..!B....tI.w..9q."..id.....l...._..2..9D.a..T..d...ª..!B .........w
+
+Some examples:
+
+Scan for epoch values in the file above:
+
+``epoch_scan -t 44 raw.log``
+
+Output:
+
+.. code-block:: sh
+
+    Sample picked from offset: 4
+    44036102 01540200 64000019 AA000021 42200005 00000000 00000077 AA100021 42100001 07744901 77000539      (big end.)      22282752        =>   1970-05-10 00:08:00    4-Bytes bit-based timestamp since 1970 [0.900000]
+    44036102 01540200 64000019 AA000021 42200005 00000000 00000077 AA100021 42100001 07744901 77000539      (little end.)   1677722196      =>   None                   4-Bytes bit-based timestamp since 1970 [0.900000]
+    44036102 01540200 64000019 AA000021 42200005 00000000 00000077 AA100021 42100001 07744901 77000539      (little end.)   -1441202176     =>   2012-08-12 16:00:00    4-Bytes bit-based timestamp since 1970 [0.900000]
+    44036102 01540200 64000019 AA000021 42200005 00000000 00000077 AA100021 42100001 07744901 77000539      (little end.)   1109458944      =>   1986-08-16 16:00:00    4-Bytes bit-based timestamp since 1970 [0.900000]
+    44036102 01540200 64000019 AA000021 42200005 00000000 00000077 AA100021 42100001 07744901 77000539      (big end.)      -1441791967     =>   2012-08-08 00:00:33    4-Bytes bit-based timestamp since 1970 [0.900000]
+    44036102 01540200 64000019 AA000021 42200005 00000000 00000077 AA100021 42100001 07744901 77000539      (little end.)   1109458960      =>   1986-08-16 16:00:16    4-Bytes bit-based timestamp since 1970 [0.900000]
+    44036102 01540200 64000019 AA000021 42200005 00000000 00000077 AA100021 42100001 07744901 77000539      (little end.)   117506064       =>   None                   4-Bytes bit-based timestamp since 1970 [0.900000]
+    
+The outputs shows a random sample from the file. Each match is highlighted (blue for big endian, green for little endian). The bytes are shown in capital hex and displayed in groups of 4 bytes. To aid the interpretation of the results, both the numeric value and the converted value are shown for the matching format.
+
+Other options which might be helpfull are:
+
+* using a fixed sample -s
+* defining a --min or --max if you expect a specific period
+* limit the number of items to process -c
