@@ -11,7 +11,7 @@ import sys
 from epoch_analyzer import EpochTester
 from termcolor import colored
 
-DEFAULT_ROW_COUNT = 10
+DEFAULT_ROW_COUNT = 100
 SCORE_LIMIT = 0.7
 
 def main():
@@ -58,10 +58,17 @@ class EpochSearcher(object):
         return (block, hex_string)
 
     def process(self):
-        result = self.file.read(self.count * self.table_width)
+        buffer_size = self.count * self.table_width
+        result = self.file.read(buffer_size)
         matches = {}
 
-        for start in range(len(result)):
+        actual_size = len(result)
+
+	# correct the count if needed
+        if (actual_size < buffer_size):
+            self.count = actual_size // self.table_width
+
+        for start in range(actual_size):
             for byte_size in range(1, 17):
                 for signed in [True, False]:
                     for byte_order in ['little', 'big']:
