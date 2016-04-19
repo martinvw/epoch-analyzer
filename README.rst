@@ -4,11 +4,20 @@ Welcome to the Epoch Analyzer
 .. image:: https://badge.fury.io/py/epoch_analyzer.svg
     :target: https://badge.fury.io/py/epoch_analyzer
 
+.. image:: https://img.shields.io/pypi/status/epoch_analyzer.svg?maxAge=2592000   
+:target: https://pypi.python.org/pypi/epoch_analyzer
+    
+.. image:: https://img.shields.io/pypi/dm/epoch_analyzer.svg?maxAge=2592000   
+    :target: https://pypi.python.org/pypi/epoch_analyzer
+
 .. image:: https://travis-ci.org/martinvw/epoch-analyzer.png?branch=master
     :target: https://travis-ci.org/martinvw/epoch-analyzer
 
 .. image:: https://coveralls.io/repos/martinvw/epoch-analyzer/badge.png?branch=master
-  :target: https://coveralls.io/r/martinvw/epoch-analyzer?branch=master
+    :target: https://coveralls.io/r/martinvw/epoch-analyzer?branch=master
+  
+.. image:: https://img.shields.io/pypi/pyversions/epoch_analyzer.svg?maxAge=2592000
+    :target: https://pypi.python.org/pypi/epoch_analyzer
 
 A python module to analyze numbers to determine on which epoch they might be based and in what unit they might be expressed.
 
