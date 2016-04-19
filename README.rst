@@ -1,6 +1,8 @@
 =============================
 Welcome to the Epoch Analyzer
 =============================
+.. image:: https://badge.fury.io/py/epoch_analyzer.svg
+    :target: https://badge.fury.io/py/epoch_analyzer
 
 .. image:: https://travis-ci.org/martinvw/epoch-analyzer.png?branch=master
     :target: https://travis-ci.org/martinvw/epoch-analyzer
