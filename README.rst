@@ -6,9 +6,6 @@ Welcome to the Epoch Analyzer
 
 .. image:: https://img.shields.io/pypi/status/epoch_analyzer.svg?maxAge=2592000   
     :target: https://pypi.python.org/pypi/epoch_analyzer
-    
-.. image:: https://img.shields.io/pypi/dm/epoch_analyzer.svg?maxAge=2592000   
-    :target: https://pypi.python.org/pypi/epoch_analyzer
 
 .. image:: https://travis-ci.org/martinvw/epoch-analyzer.png?branch=master
     :target: https://travis-ci.org/martinvw/epoch-analyzer
