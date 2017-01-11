@@ -45,7 +45,7 @@ Given the resulting object you can call test or convert, for either testing numb
 Usage EpochTester.test
 ----------------------
 
-You can pass one number, an iterable list of numbers (for example a counter) to this method.
+You can pass one number or an iterable list of numbers (for example a counter) to this method.
 
 For each number one test conversion is performed, it then check which format matches most of the values, a counter object is returned. By calling most_common on that object, the items can be iterated in order starting at the most likely options.
 
