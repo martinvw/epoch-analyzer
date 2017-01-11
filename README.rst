@@ -38,7 +38,7 @@ Import the EpochTester from the package epoch_analyzer
 
 ``from epoch_analyzer import EpochTester``
 
-If you desire you can pass a min_date and max_date which are used for reference.
+Optionally you can pass a min_date and max_date which are used for reference.
 
 Given the resulting object you can call test or convert, for either testing numbers for a probable format or (batch) converting lists of numbers to dates.
 
